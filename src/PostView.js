@@ -1,12 +1,90 @@
-import React from 'react';
+import React, {useState, useContext, useEffect} from 'react';
+import PostContext from './PostContext';
 import moment from 'moment';
+import {useHistory} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const PostView = ({post, handleClick}) => {
+const EditBtns = ({showEditBtns, editMode, setEditMode, post}) => {
+  const history = useHistory();
+  const [currentPost, setCurrentPost , updatePosts] = useContext(PostContext);
+
+  const handleDelete = e => {
+    fetch(`${process.env.REACT_APP_BASE_URL}/posts/${post.id}`, {
+      method: "DELETE"
+    })
+    .then(() => {
+      updatePosts();
+      history.push('/');
+    })
+  }
+
+  const handleEdit = e => {
+    setEditMode(true);
+  }
+
+  const handleSave = e => {
+    fetch(`${process.env.REACT_APP_BASE_URL}/posts`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: post.id, //id === 0 сервер обрабатывает как новый пост, сам присваивает новый id
+        content: currentPost
+      })
+    })
+    .then(() => {
+      updatePosts();
+      setEditMode(false);
+      history.push(`/posts/${post.id}`);
+    });
+  }
+
+
+  if (showEditBtns) {
+    if (editMode) {
+      return (
+        <div>
+          <button className="btn btn-primary pull-right" onClick={handleSave}>Сохранить</button>
+        </div>
+      )
+    }
+    return (
+        <div>
+          <button className="btn btn-primary pull-right" onClick={handleEdit}>Изменить</button>
+          <button className="btn btn-primary pull-right" onClick={handleDelete}>Удалить</button>
+        </div>
+      )
+  }
+  return null;
+}
+
+const PostContent = ({post, editMode}) => {
+  const [currentPost, setCurrentPost] = useContext(PostContext);
+
+  useEffect(() => {
+    setCurrentPost(post.content)
+  }, []);
+
+  if (editMode) {
+    return (
+      <input value={currentPost} onChange={e => setCurrentPost(e.target.value)} />
+    )
+  }
+  return <p>{post.content}</p>
+}
+
+const PostView = ({post, handleClick, showEditBtns}) => {
+  const history = useHistory();
+  const [editMode, setEditMode] = useState(false);
+  const close = editMode 
+  ? <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onClick={() => setEditMode(false)}>
+      ×
+    </button> 
+  : null;
+
   if (post) {
     return (
       <div class="container" onClick={handleClick || null}>
               <div class="col-md-5 panel panel-default">
+                {close}
                   <div class="panel-body">
                     <section class="post-heading">
                           <div class="row">
@@ -29,7 +107,7 @@ const PostView = ({post, handleClick}) => {
                           </div>             
                     </section>
                     <section class="post-body">
-                        <p>{post.content}</p>
+                        <PostContent editMode={editMode} post={post} />
                     </section>
                     <section class="post-footer">
                         <hr />
@@ -40,6 +118,7 @@ const PostView = ({post, handleClick}) => {
                                   <li><a href="#"><i class="glyphicon glyphicon-share-alt"></i> Share</a></li>
                               </ul>
                         </div>
+                        <EditBtns showEditBtns={showEditBtns} post={post} editMode={editMode} setEditMode={setEditMode} />
                     </section>
                   </div>
               </div>   

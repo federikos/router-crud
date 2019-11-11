@@ -9,15 +9,18 @@ import PostContext from './PostContext';
 function App() {
   const [currentPost, setCurrentPost] = useState('');
   const [posts, setPosts] = useState([]);
+  const updatePosts = () => {
+    fetch(`${process.env.REACT_APP_BASE_URL}/posts`)
+    .then(res => res.json())
+    .then(res => setPosts(res))
+  }
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_BASE_URL}/posts`)
-      .then(res => res.json())
-      .then(res => setPosts(res))
+    updatePosts()
   }, []);
 
   return (
-    <PostContext.Provider value={[currentPost, setCurrentPost, posts, setPosts]}>
+    <PostContext.Provider value={[currentPost, setCurrentPost, updatePosts]}>
       <div className="App">
         <Router>
           <Route exact path="/" render={props => <Posts {...props} posts={posts} />} />

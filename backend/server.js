@@ -13,7 +13,7 @@ let posts = [
   {id: 1, content: 'Пост для Реакт', created: new Date()},
   {id: 2, content: 'Еще один пост для Реакт', created: new Date()}
 ];
-let nextId = 1;
+let nextId = posts.length + 1;
 
 const router = new Router();
 
@@ -22,7 +22,7 @@ router.get('/posts', async (ctx, next) => {
 });
 
 router.post('/posts', async(ctx, next) => {
-    const {id, content} = ctx.request.body;
+    const {id, content} = JSON.parse(ctx.request.body);
 
     if (id !== 0) {
         posts = posts.map(o => o.id !== id ? o : {...o, content: content});
@@ -30,12 +30,13 @@ router.post('/posts', async(ctx, next) => {
         return;
     }
 
-    posts.push({...ctx.request.body, id: nextId++, created: Date.now()});
+    posts.push({...JSON.parse(ctx.request.body), id: nextId++, created: new Date()});
+    console.log(posts)
     ctx.response.status = 204;
 });
 
 router.delete('/posts/:id', async(ctx, next) => {
-    const postId = Number(ctx.params.id);
+    const postId = Number(JSON.parse(ctx.params.id));
     const index = posts.findIndex(o => o.id === postId);
     if (index !== -1) {
         posts.splice(index, 1);
