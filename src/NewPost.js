@@ -8,7 +8,7 @@ const NewPost = props => {
   const isNewPostPage = props.match && props.match.path === '/posts/new';
 
   const close = isNewPostPage 
-    ? <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onClick={() => history.push('/')}>
+    ? <button type="button" class="close" onClick={() => history.push('/')}>
         ×
       </button> 
     : null;
@@ -25,6 +25,7 @@ const NewPost = props => {
       })
       .then(() => {
         updatePosts();
+        setCurrentPost('');
         history.push('/');
       });
     }

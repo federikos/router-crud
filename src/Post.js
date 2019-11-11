@@ -19,7 +19,7 @@ Post.propTypes = {
   post: PropTypes.shape({
     id: PropTypes.number.isRequired,
     content: PropTypes.string.isRequired,
-    created: PropTypes.instanceOf(Date),
+    created: PropTypes.string.isRequired,
   })
 };
 

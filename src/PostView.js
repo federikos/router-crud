@@ -1,4 +1,5 @@
 import React, {useState, useContext, useEffect} from 'react';
+import clsx from 'clsx';
 import PostContext from './PostContext';
 import moment from 'moment';
 import {useHistory} from 'react-router-dom';
@@ -19,7 +20,14 @@ const EditBtns = ({showEditBtns, editMode, setEditMode, post}) => {
   }
 
   const handleEdit = e => {
-    setEditMode(true);
+    setEditMode(prevEditMode => {
+      if (!prevEditMode) {
+        setCurrentPost(post.content);
+      } else {
+        setCurrentPost('');
+      }
+      return true;
+    });
   }
 
   const handleSave = e => {
@@ -31,8 +39,9 @@ const EditBtns = ({showEditBtns, editMode, setEditMode, post}) => {
       })
     })
     .then(() => {
-      updatePosts();
+      setCurrentPost('');
       setEditMode(false);
+      updatePosts();
       history.push(`/posts/${post.id}`);
     });
   }
@@ -59,10 +68,6 @@ const EditBtns = ({showEditBtns, editMode, setEditMode, post}) => {
 const PostContent = ({post, editMode}) => {
   const [currentPost, setCurrentPost] = useContext(PostContext);
 
-  useEffect(() => {
-    setCurrentPost(post.content)
-  }, []);
-
   if (editMode) {
     return (
       <input value={currentPost} onChange={e => setCurrentPost(e.target.value)} />
@@ -82,46 +87,43 @@ const PostView = ({post, handleClick, showEditBtns}) => {
 
   if (post) {
     return (
-      <div class="container" onClick={handleClick || null}>
-              <div class="col-md-5 panel panel-default">
-                {close}
-                  <div class="panel-body">
-                    <section class="post-heading">
-                          <div class="row">
-                              <div class="col-md-11">
-                                  <div class="media">
-                                    <div class="media-left">
-                                      <a href="#">
-                                        <img class="media-object photo-profile" src="http://0.gravatar.com/avatar/38d618563e55e6082adf4c8f8c13f3e4?s=40&d=mm&r=g" width="40" height="40" alt="..." />
-                                      </a>
-                                    </div>
-                                    <div class="media-body">
-                                      <a href="#" class="anchor-username"><h4 class="media-heading">Bayu Darmantra</h4></a> 
-                                      <a href="#" class="anchor-time">{moment(post.created).fromNow(true)}</a>
-                                    </div>
-                                  </div>
+      <div className="container">
+        <div className={clsx('col-md-5', 'panel', 'panel-default', !showEditBtns && 'clickable' )} onClick={handleClick || null}>
+          {close}
+            <div class="panel-body">
+              <section class="post-heading">
+                    <div class="row">
+                        <div class="col-md-11">
+                            <div class="media">
+                              <div class="media-left">
+                                <a href="#">
+                                  <img class="media-object photo-profile" src="http://0.gravatar.com/avatar/38d618563e55e6082adf4c8f8c13f3e4?s=40&d=mm&r=g" width="40" height="40" alt="..." />
+                                </a>
                               </div>
-                              <div class="col-md-1">
-                                  <a href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
+                              <div class="media-body">
+                                <a href="#" class="anchor-username"><h4 class="media-heading">Bayu Darmantra</h4></a> 
+                                <a href="#" class="anchor-time">{moment(post.created).fromNow(true)}</a>
                               </div>
-                          </div>             
-                    </section>
-                    <section class="post-body">
-                        <PostContent editMode={editMode} post={post} />
-                    </section>
-                    <section class="post-footer">
-                        <hr />
-                        <div class="post-footer-option container">
-                              <ul class="list-unstyled">
-                                  <li><a href="#"><i class="glyphicon glyphicon-thumbs-up"></i> Like</a></li>
-                                  <li><a href="#"><i class="glyphicon glyphicon-comment"></i> Comment</a></li>
-                                  <li><a href="#"><i class="glyphicon glyphicon-share-alt"></i> Share</a></li>
-                              </ul>
+                            </div>
                         </div>
-                        <EditBtns showEditBtns={showEditBtns} post={post} editMode={editMode} setEditMode={setEditMode} />
-                    </section>
+                    </div>             
+              </section>
+              <section class="post-body">
+                  <PostContent editMode={editMode} post={post} />
+              </section>
+              <section class="post-footer">
+                  <hr />
+                  <div class="post-footer-option container">
+                        <ul class="list-unstyled">
+                            <li><a href="#"><i class="glyphicon glyphicon-thumbs-up"></i> Like</a></li>
+                            <li><a href="#"><i class="glyphicon glyphicon-comment"></i> Comment</a></li>
+                            <li><a href="#"><i class="glyphicon glyphicon-share-alt"></i> Share</a></li>
+                        </ul>
                   </div>
-              </div>   
+                  <EditBtns showEditBtns={showEditBtns} post={post} editMode={editMode} setEditMode={setEditMode} />
+              </section>
+            </div>
+        </div>   
       </div>
     );
   }

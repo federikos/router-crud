@@ -9,6 +9,7 @@ import PostContext from './PostContext';
 function App() {
   const [currentPost, setCurrentPost] = useState('');
   const [posts, setPosts] = useState([]);
+  
   const updatePosts = () => {
     fetch(`${process.env.REACT_APP_BASE_URL}/posts`)
     .then(res => res.json())
