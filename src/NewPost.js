@@ -8,7 +8,6 @@ const NewPost = ({match}) => {
   const history = useHistory();
   const isNewPostPage = match && match.path === '/posts/new';
 
-  console.log(typeof match)
   const close = isNewPostPage 
     ? <button type="button" className="close" onClick={() => history.push('/')}>
         ×
