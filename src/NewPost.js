@@ -1,14 +1,16 @@
 import React, {useContext} from 'react';
+import PropTypes from 'prop-types';
 import CurrentPostContext from './PostContext';
 import {useHistory} from 'react-router-dom';
 
-const NewPost = props => {
+const NewPost = ({match}) => {
   const [currentPost, setCurrentPost, updatePosts] = useContext(CurrentPostContext);
   const history = useHistory();
-  const isNewPostPage = props.match && props.match.path === '/posts/new';
+  const isNewPostPage = match && match.path === '/posts/new';
 
+  console.log(typeof match)
   const close = isNewPostPage 
-    ? <button type="button" class="close" onClick={() => history.push('/')}>
+    ? <button type="button" className="close" onClick={() => history.push('/')}>
         ×
       </button> 
     : null;
@@ -32,8 +34,6 @@ const NewPost = props => {
     history.push('/posts/new');
   }
 
-
-
   return (
     <div className="container">
       <div className="well col-md-5"> 
@@ -53,6 +53,10 @@ const NewPost = props => {
       </div>
     </div>
   );
+}
+
+NewPost.propTypes = {
+  match: PropTypes.object,
 }
 
 export default NewPost;

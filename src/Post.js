@@ -20,7 +20,7 @@ Post.propTypes = {
     id: PropTypes.number.isRequired,
     content: PropTypes.string.isRequired,
     created: PropTypes.string.isRequired,
-  })
+  }),
 };
 
 export default Post;

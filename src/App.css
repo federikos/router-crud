@@ -12,7 +12,9 @@ body{
 }
 
 /*-- Bootstrap Override Style --*/
-
+.btn {
+  margin: 5px;
+}
 
 /*-- Content Style --*/
 .post-footer-option li{
